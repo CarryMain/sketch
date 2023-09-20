@@ -7,9 +7,20 @@ const colorPicker = document.getElementById('colorPicker');
 const dropdown = document.querySelector(".dropdown");
 const colorDisplay = document.querySelector(".dropbtn");
 
+const slider = document.getElementById('canvas-size');
+let currentColor = colorDisplay.innerHTML;
+
 const eraser = document.getElementById('eraser');
 let isDrawing = false;
 let isEraser = false;
+
+function changeThicket(value) {
+    ctx.lineWidth = value;
+}
+
+slider.addEventListener('input', (event) => {
+    changeThicket(event.target.value);
+})
 
 eraser.addEventListener('click',() => {
     if(!eraser.classList.contains('active')) {
@@ -48,12 +59,12 @@ canvas.addEventListener('mousemove', (event) => {
       const x = event.clientX - canvas.getBoundingClientRect().left;
       const y = event.clientY - canvas.getBoundingClientRect().top;
       ctx.beginPath();
-      ctx.arc(x, y, 5, 0, 2 * Math.PI);
+      ctx.arc(x, y, ctx.lineWidth, 0, 2 * Math.PI);
       ctx.fill();
     }
   });
   
-  canvas.addEventListener('mouseup', () => {
+canvas.addEventListener('mouseup', () => {
     if(isEraser) {
       isEraser = false;
       ctx.closePath();
@@ -71,7 +82,9 @@ colorPicker.addEventListener("click", (event) => {
   if (event.target.tagName === "BUTTON") {
     colorDisplay.innerHTML = event.target.innerHTML;
     if(!isEraser) {
+        currentColor = event.target.innerHTML;
         ctx.fillStyle = currentColor;
+        
   }}
 });
 
@@ -85,7 +98,8 @@ const choiceColor = () => {
         button.style.color = 'white';
     }
     button.addEventListener('click', () => {
-      ctx.fillStyle = color;
+        currentColor = color;
+        ctx.fillStyle = color;
     });
     colorPicker.appendChild(button);
   });
