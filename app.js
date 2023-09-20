@@ -1,79 +1,65 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 canvas.style.backgroundColor = 'white';
-const canvasSize = document.getElementById('canvas-size');
-const canvasSizeDisplay = document.getElementById('canvas-size-display');
+const clear = document.getElementById('clear');
 
-const content = {
-    x:0,
-    y:0,
-    width: canvas.width * 0.5,
-    height: canvas.height * 0.5,
+const colorPicker = document.getElementById('colorPicker');
+const dropdown = document.querySelector(".dropdown");
+const colorDisplay = document.querySelector(".dropbtn");
+
+dropdown.addEventListener("click", () => {
+  colorPicker.classList.toggle("dropdown-active");
+});
+
+colorPicker.addEventListener("click", (event) => {
+  if (event.target.tagName === "BUTTON") {
+    colorDisplay.innerHTML = event.target.innerHTML;
+  }
+});
+
+const choiceColor = () => {
+  const colors = ['red', 'blue', 'green', 'yellow', 'black'];
+  colors.forEach((color) => {
+    const button = document.createElement('button');
+    button.textContent = color;
+    button.style.background = color;
+    if(color === 'black') {
+        button.style.color = 'white';
+    }
+    button.addEventListener('click', () => {
+      ctx.fillStyle = color;
+    });
+    colorPicker.appendChild(button);
+  });
 };
-
-function draw() {
-    ctx.clearRect(0,0,canvas.width, canvas.height);
-    ctx.fillStyle = 'black';
-    ctx.fillRect(content.x, content.y, content.width, content.height);
-}
-
-draw();
-
-
-canvasSize.addEventListener('input',() => {
-    const newSize = canvasSize.value;
-    canvasSizeDisplay.innerText = `${canvasSize.value}x${canvasSize.value}`;
-    canvas.width = newSize;
-    canvas.height = newSize;
-    draw();
-})
-
-
-
-
-
-
-
-
 
 
 let isDrawing = false;
-canvas.addEventListener('mousedown', (event) => {
-    isDrawing = true;
-    ctx.beginPath();
-})
 
-const setColor = () => {
-    canvas.addEventListener('mousemove', (event) => {
-        if(!isDrawing) return;
-        const x = event.clientX - canvas.getBoundingClientRect().left;
-        const y = event.clientY - canvas.getBoundingClientRect().top;
-        ctx.fillStyle = getRandomColor();
-        ctx.beginPath();
-        ctx.arc(x,y,5,0,2 * Math.PI);
-        ctx.fill();
-        updateCursor(event);
-    })
-}
-canvas.addEventListener('mouseup',() => {
-    isDrawing = false;
-    canvas.style.cursor = 'default';
-})
+canvas.addEventListener('mousedown', () => {
+  isDrawing = true;
+  ctx.beginPath();
+});
 
-const getRandomColor = () => {
-   let colors = "0123456789ABCDEF";
-   let color = '#';
-   for(let i=0;i<6; i++) {
-    color+= colors[Math.floor(Math.random()*16)]
-   }
-   return color;
-}
+canvas.addEventListener('mousemove', (event) => {
+  if (!isDrawing) return;
+  const x = event.clientX - canvas.getBoundingClientRect().left;
+  const y = event.clientY - canvas.getBoundingClientRect().top;
+  ctx.beginPath();
+  ctx.arc(x, y, 5, 0, 2 * Math.PI);
+  ctx.fill();
+});
 
-const updateCursor = (e) => {
-    const cursorColor = getRandomColor();
-    canvas.style.cursor = `url('data:image/svg+xml, <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="5" fill="${cursorColor}"/></svg>') 10 10, auto`;
-}
+canvas.addEventListener('mouseup', () => {
+  isDrawing = false;
+  canvas.style.cursor = 'default';
+});
 
-setColor();
-
+const removeCanvas = () => {
+  clear.addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+};
+choiceColor();
+removeCanvas();
 
